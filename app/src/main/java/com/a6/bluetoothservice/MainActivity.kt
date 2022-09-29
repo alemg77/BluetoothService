@@ -14,8 +14,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 
 class MainActivity : AppCompatActivity() {
@@ -24,9 +28,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         Log.d(TAG, "Inicio de la app BluetoothService")
+
+
+        setContent {
+            Hello()
+        }
+
+        initialSetupBluetooth()
+
+    }
+
+    private fun initialSetupBluetooth() {
+
 
         Intent(this, BluetoothLeService::class.java).also {
             startService(it)
@@ -55,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 BluetoothLeService.STATE_SERVICES_DISCOVERED -> {
                     Log.d(TAG, "Listo para funcionar!!!!!!!!!!!!!!!!!!!!!!")
-                    val t:String = "pulsador 1  "
+                    val t = "pulsador 1  "
                     mBluetoothLeService.enviar(t.toByteArray())
                 }
             }
@@ -169,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             val resultLauncher =
                 registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                     if (result.resultCode == Activity.RESULT_OK) {
-                        val data: Intent? = result.data
+                        //  val data: Intent? = result.data
 
                         // TODO: Verificar que el usuario acepto activar bluetooth
 
@@ -237,4 +252,9 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+}
+
+@Composable
+private fun Hello() {
+    Text("Hola Jetpack Componse")
 }
