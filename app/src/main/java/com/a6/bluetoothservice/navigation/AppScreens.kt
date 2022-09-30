@@ -1,9 +1,31 @@
 package com.a6.bluetoothservice.navigation
 
-sealed class AppScreens(val route:String) {
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
-    object ShowDevices: AppScreens("list_devices")
+sealed class AppScreens(
+    val baseRoute: String,
+    private val navArgs: List<NavArgs> = emptyList()
+) {
 
-    object ShowDevice: AppScreens("device")
+    val route = run {
+        val argKeys = navArgs.map { "{${it.key}}" }
+        listOf(baseRoute).plus(argKeys).joinToString("/")
+    }
 
+    val args = navArgs.map {
+        navArgument(it.key) { type = it.navType }
+    }
+
+    object ShowDevices : AppScreens("list_devices")
+
+    object ShowDevice : AppScreens("device", listOf(NavArgs.Name, NavArgs.Mac)) {
+        fun createNavRoute(name:String, mac:String) = "$baseRoute/$name/$mac"
+    }
+
+}
+
+enum class NavArgs(val key: String, val navType: NavType<*>) {
+    Name("name", NavType.StringType),
+    Mac("mac", NavType.StringType)
 }

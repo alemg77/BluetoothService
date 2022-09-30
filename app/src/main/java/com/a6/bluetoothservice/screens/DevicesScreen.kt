@@ -79,7 +79,10 @@ fun ListElement(
             .fillMaxWidth()
             .clickable {
                 navController.navigate(
-                    route = AppScreens.ShowDevice.route + "/${device.mac}" + "/${device.name}"
+                    route = AppScreens.ShowDevice.createNavRoute(
+                        name = device.name,
+                        mac = device.mac
+                    )
                 )
             }
     ) {

@@ -19,7 +19,7 @@ class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel
     private var adapter: BluetoothAdapter
 
     // TODO: ARREGLAR ESTE LEAK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    private var mBluetoothLeService: BluetoothLeService
+    //private var mBluetoothLeService: BluetoothLeService
 
     private val _isBluetoothOn = MutableLiveData<Boolean>()
     val isBluetoothOn: LiveData<Boolean> = _isBluetoothOn
@@ -62,8 +62,6 @@ class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel
         val bluetoothManager = app.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 
         adapter = bluetoothManager.adapter
-
-        mBluetoothLeService = BluetoothLeService()
 
         _bluetoothDevices.postValue(null)
 
@@ -123,9 +121,12 @@ class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel
 
     }
 
+    /*
     fun connect(device: BluetoothDevice) {
         mBluetoothLeService.conectarGatt(device)
     }
+
+     */
 
 
 }

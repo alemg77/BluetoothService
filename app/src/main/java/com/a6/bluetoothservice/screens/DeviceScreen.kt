@@ -11,7 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Preview
+@Preview(showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun ShowDevice(mac:String = "sin mac", name: String = "sin nombre") {
 
