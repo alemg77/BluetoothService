@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,69 +14,33 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProvider
-import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
-import com.a6.bluetoothservice.bluetooth.BluetoothLeService
-import com.a6.bluetoothservice.bluetooth.BluetoothReceiver
+import com.a6.bluetoothservice.navigation.AppNavigation
 import com.a6.bluetoothservice.screens.ShowDevices
 
 class MainActivity : AppCompatActivity() {
-
-    private val mBluetoothLeService = BluetoothLeService()
-
-    private lateinit var bluetoothReceiver: BluetoothReceiver
-
-    private lateinit var viewModel: BluetoothAndroidViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Log.d(TAG, "Inicio de la app BluetoothService")
 
-        viewModel = ViewModelProvider(this)[BluetoothAndroidViewModel::class.java]
-
-        bluetoothReceiver = BluetoothReceiver(viewModel)
-
-        // Este avisa cuando se activa y desactiva el bluetooth desde el sistema
-        startBroadcastReceiverBluetoothAdapter()
-
-        initialSetupBluetooth()
-
-        setContent {
-            ShowDevices(viewModel)
-        }
-
-    }
-
-    override fun onDestroy() {
-
-        Intent(this, BluetoothLeService::class.java).also {
-            stopService(it)
-        }
-
-        stopBroadcastReceiverBluetoothAdapter()
-
-        super.onDestroy()
-    }
-
-    private fun initialSetupBluetooth() {
-
-        Intent(this, BluetoothLeService::class.java).also {
-            startService(it)
-        }
-
-        receiveDataFromBluetoothLeService()
-
         if (checkMultiplesPermissions(PERMISSIONS)) {
             if (checkBluetoothEnable()) {
-                viewModel.getBondedDevices()
+                Log.d(TAG, "Listo para iniciar")
+            } else {
+                Log.d(TAG, "Falta activar Bluetooth desde el sistema")
             }
         } else {
             askForMultiplesPermissions(PERMISSIONS)
         }
 
+        setContent {
+            AppNavigation()
+        }
+
     }
 
+    /*
     private fun receiveDataFromBluetoothLeService() {
         mBluetoothLeService.bluetoothStatus.observe(this) {
 
@@ -94,16 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
-    private fun startBroadcastReceiverBluetoothAdapter() {
-        val filter = IntentFilter()
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-        this.registerReceiver(bluetoothReceiver, filter)
-    }
-
-    private fun stopBroadcastReceiverBluetoothAdapter() {
-        unregisterReceiver(bluetoothReceiver)
-    }
+     */
 
     private fun checkMultiplesPermissions(permissions: Array<String>): Boolean {
 
@@ -140,7 +94,6 @@ class MainActivity : AppCompatActivity() {
             }
             checkBluetoothEnable()
         }
-
         per.launch(permissions)
 
     }
@@ -158,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
                     when (result.resultCode) {
                         Activity.RESULT_OK -> {
-                            viewModel.getBondedDevices()
+                            //viewModel.getBondedDevices()
                         }
                         Activity.RESULT_CANCELED -> {
                             // TODO: Explicarle al usuario que es necesario bluetooth
@@ -175,7 +128,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TAG = "TAGGG_MainActivity"
+
+        const val TAG = "TAGGG_BluetoothService"
 
         var PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             arrayOf(
@@ -194,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.BLUETOOTH_ADMIN
             )
         }
-
     }
+
 }
 

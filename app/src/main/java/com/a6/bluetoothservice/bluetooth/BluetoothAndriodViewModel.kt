@@ -5,17 +5,57 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    private lateinit var adapter: BluetoothAdapter
+    private var adapter: BluetoothAdapter
 
-    var isBluetoothOn: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    // TODO: ARREGLAR ESTE LEAK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private var mBluetoothLeService: BluetoothLeService
 
-    var bluetoothDevices : MutableLiveData<Set<BluetoothDevice>?> = MutableLiveData<Set<BluetoothDevice>?>()
+    private val _isBluetoothOn = MutableLiveData<Boolean>()
+    val isBluetoothOn: LiveData<Boolean> = _isBluetoothOn
+
+    private val _bluetoothDevices = MutableLiveData<ArrayList<BluetoothDeviceUIModel>>()
+    val bluetoothDevices: LiveData<ArrayList<BluetoothDeviceUIModel>> = _bluetoothDevices
+
+    inner class BluetoothReceiver() : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+            when (intent?.action) {
+
+                BluetoothAdapter.ACTION_STATE_CHANGED -> {
+
+                    when (intent.getIntExtra(
+                        BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR
+                    )) {
+
+                        BluetoothAdapter.STATE_OFF -> {
+                            _isBluetoothOn.postValue(false)
+                        }
+
+                        BluetoothAdapter.STATE_ON -> {
+                            _isBluetoothOn.postValue(true)
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+
+    private val bluetoothReceiver = BluetoothReceiver()
 
     init {
 
@@ -23,22 +63,68 @@ class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel
 
         adapter = bluetoothManager.adapter
 
-        bluetoothDevices.value = null
+        mBluetoothLeService = BluetoothLeService()
 
-        isBluetoothOn.value = adapter.isEnabled
+        _bluetoothDevices.postValue(null)
+
+        _isBluetoothOn.postValue(adapter.isEnabled)
+
+        startReceiver()
+
+        /*
+        Intent(this, BluetoothLeService::class.java).also {
+            startService(it)
+        }
+        */
+
+        /*
+        Intent(this, BluetoothLeService::class.java).also {
+            stopService(it)
+        }
+         */
 
     }
 
+    override fun onCleared() {
+
+        Log.d("TAGGG", "********* BluetoothAndroidViewModel onCleared ***************")
+
+        stopReceiver()
+
+        super.onCleared()
+    }
+
+    private fun startReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+        app.registerReceiver(bluetoothReceiver, filter)
+    }
+
+    private fun stopReceiver() {
+        app.unregisterReceiver(bluetoothReceiver)
+    }
+
     @SuppressLint("MissingPermission")
-    fun getBondedDevices(): Set<BluetoothDevice>? {
+    fun getBondedDevices(): ArrayList<BluetoothDeviceUIModel> {
+
+        val devices = ArrayList<BluetoothDeviceUIModel>()
 
         if (adapter.isEnabled) {
-            bluetoothDevices.value = adapter.bondedDevices
-            return adapter.bondedDevices
+
+            adapter.bondedDevices.forEach {
+                devices.add(BluetoothDeviceUIModel(it.name, it.address))
+            }
+
         }
 
-        return null
+        _bluetoothDevices.postValue(devices)
 
+        return devices
+
+    }
+
+    fun connect(device: BluetoothDevice) {
+        mBluetoothLeService.conectarGatt(device)
     }
 
 
