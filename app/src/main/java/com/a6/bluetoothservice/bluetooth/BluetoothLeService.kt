@@ -1,4 +1,4 @@
-package com.a6.bluetoothservice
+package com.a6.bluetoothservice.bluetooth
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 
+@Suppress("DEPRECATION")
 @SuppressLint("MissingPermission")
 class BluetoothLeService() : Service() {
 
@@ -40,7 +41,6 @@ class BluetoothLeService() : Service() {
 
     private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
 
-        /*
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
             characteristic: BluetoothGattCharacteristic
@@ -57,7 +57,6 @@ class BluetoothLeService() : Service() {
             super.onCharacteristicRead(gatt, characteristic, status)
             Log.d(TAG, "onCharacteristicRead")
         }
-         */
 
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt,
@@ -73,7 +72,7 @@ class BluetoothLeService() : Service() {
             Log.d(TAG, "onConnectionStateChange")
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
-                sendDataToActivity(STATE_CONNECTED)
+                sendStateToActivity(STATE_CONNECTED)
 
                 connectionState = STATE_CONNECTED
 
@@ -85,7 +84,6 @@ class BluetoothLeService() : Service() {
             }
         }
 
-        /*
         override fun onDescriptorRead(
             gatt: BluetoothGatt,
             descriptor: BluetoothGattDescriptor,
@@ -94,7 +92,6 @@ class BluetoothLeService() : Service() {
             super.onDescriptorRead(gatt, descriptor, status)
             Log.d(TAG, "onDescriptorRead")
         }
-         */
 
         override fun onDescriptorWrite(
             gatt: BluetoothGatt,
@@ -138,7 +135,7 @@ class BluetoothLeService() : Service() {
 
                 displayGattServices(serviciosGatt)
 
-                sendDataToActivity(STATE_SERVICES_DISCOVERED)
+                sendStateToActivity(STATE_SERVICES_DISCOVERED)
 
             } else {
                 Log.d(
@@ -206,19 +203,20 @@ class BluetoothLeService() : Service() {
 
         mWriteCharacteristic?.value = byteArray
 
-
         bluetoothGatt?.writeCharacteristic(mWriteCharacteristic)
 
         return true
 
     }
 
-    private val _notifications = MutableLiveData<Int>()
-    val notifications: LiveData<Int> = _notifications
+    private val _bluetoothState = MutableLiveData<Int>()
+    val bluetoothStatus: LiveData<Int> = _bluetoothState
 
-    private fun sendDataToActivity(data: Int) {
-        _notifications.postValue(data)
+    private fun sendStateToActivity(data: Int) {
+        _bluetoothState.postValue(data)
     }
+
+
 
     companion object {
         private const val TAG = "TAGGG_BluetoothLeService"
