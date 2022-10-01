@@ -28,14 +28,14 @@ fun ShowDevice(mac:String = "sin mac", name: String = "sin nombre") {
                 .padding(8.dp)
         ) {
 
-            Row() {
+            Row {
                 Text(text = "nombre: ", fontSize = 20.sp)
                 Text(text = name, fontSize = 20.sp)
             }
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row() {
+            Row {
                 Text(text = "mac = ", fontSize = 20.sp)
                 Text(text = mac, fontSize = 20.sp)
             }

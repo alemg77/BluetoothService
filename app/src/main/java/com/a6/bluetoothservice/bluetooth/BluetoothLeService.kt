@@ -12,7 +12,7 @@ import androidx.lifecycle.MutableLiveData
 
 @Suppress("DEPRECATION")
 @SuppressLint("MissingPermission")
-class BluetoothLeService() : Service() {
+class BluetoothLeService : Service() {
 
     init {
         Log.d(TAG, "BluetoothLeService running.... ")

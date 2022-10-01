@@ -28,7 +28,7 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
 
     var bluetoothDevices = emptyList<BluetoothDeviceUIModel>()
 
-    inner class BluetoothReceiver() : BroadcastReceiver() {
+    inner class BluetoothReceiver : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
 

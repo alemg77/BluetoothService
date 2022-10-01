@@ -11,8 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
@@ -50,7 +48,7 @@ fun MyDevices(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        Column() {
+        Column {
             devices.forEach {
                 ListElement(navController = navController, device = it)
             }
@@ -83,14 +81,14 @@ fun ListElement(
                 .padding(8.dp)
         ) {
 
-            Row() {
+            Row {
                 Text(text = "nombre: ", fontSize = 20.sp)
                 Text(text = device.name, fontSize = 20.sp)
             }
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row() {
+            Row {
                 Text(text = "mac = ", fontSize = 20.sp)
                 Text(text = device.mac, fontSize = 20.sp)
             }
