@@ -12,8 +12,12 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class BluetoothAndroidViewModel(private val app: Application) : AndroidViewModel(app) {
+@HiltViewModel
+class BluetoothAndroidViewModel @Inject constructor(private val app: Application) :
+    AndroidViewModel(app) {
 
     private var adapter: BluetoothAdapter
 

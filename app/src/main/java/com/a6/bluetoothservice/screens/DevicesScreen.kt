@@ -20,24 +20,20 @@ import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.navigation.AppScreens
 
 @Composable
-fun ShowDevices(navController: NavHostController = rememberNavController()) {
-
-    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-    }
-
-    val viewModel = ViewModelProvider(viewModelStoreOwner)[BluetoothAndroidViewModel::class.java]
+fun ShowDevices(
+    navController: NavHostController = rememberNavController(),
+    viewModel: BluetoothAndroidViewModel
+) {
 
     val isBluetoothEnable = viewModel.isBluetoothOn.value
 
-    if ( !isBluetoothEnable ) {
+    if (!isBluetoothEnable) {
 
         LoadingScreen()
 
-    }
-    else {
+    } else {
 
-        MyDevices(navController = navController,viewModel.bluetoothDevices)
+        MyDevices(navController = navController, viewModel.bluetoothDevices)
 
     }
 
