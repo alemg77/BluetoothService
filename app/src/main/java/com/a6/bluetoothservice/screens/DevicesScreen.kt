@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,19 +28,16 @@ fun ShowDevices(navController: NavHostController = rememberNavController()) {
 
     val viewModel = ViewModelProvider(viewModelStoreOwner)[BluetoothAndroidViewModel::class.java]
 
-    viewModel.getBondedDevices()
+    val isBluetoothEnable = viewModel.isBluetoothOn.value
 
-    val bluetoothDevices by viewModel.bluetoothDevices.observeAsState()
+    if ( !isBluetoothEnable ) {
 
-    when (val it = bluetoothDevices) {
+        LoadingScreen()
 
-        null -> {
-            LoadingScreen()
-        }
+    }
+    else {
 
-        else -> {
-            MyDevices(navController = navController, devices = it)
-        }
+        MyDevices(navController = navController,viewModel.bluetoothDevices)
 
     }
 
@@ -53,7 +48,7 @@ fun ShowDevices(navController: NavHostController = rememberNavController()) {
 @Composable
 fun MyDevices(
     navController: NavHostController = rememberNavController(),
-    devices: ArrayList<BluetoothDeviceUIModel> = BluetoothDeviceUIModel.MOCK_DEVICES
+    devices: List<BluetoothDeviceUIModel> = BluetoothDeviceUIModel.MOCK_DEVICES
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
