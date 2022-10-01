@@ -3,6 +3,7 @@ package com.a6.bluetoothservice.bluetooth
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,10 +13,12 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.a6.bluetoothservice.MainActivity.Companion.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
+@SuppressLint("MissingPermission")
 class BluetoothAndroidViewModel @Inject constructor(private val app: Application) :
     AndroidViewModel(app) {
 
@@ -91,9 +94,9 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
 
     override fun onCleared() {
 
-        Log.d("TAGGG", "********* BluetoothAndroidViewModel onCleared ***************")
+        Log.d(TAG, "********* BluetoothAndroidViewModel onCleared ***************")
 
-        stopReceiver()
+        unregisterReceiver()
 
         super.onCleared()
     }
@@ -104,12 +107,12 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
         app.registerReceiver(bluetoothReceiver, filter)
     }
 
-    private fun stopReceiver() {
+    fun unregisterReceiver() {
+        Log.d(TAG, "unregisterReceiver")
         app.unregisterReceiver(bluetoothReceiver)
     }
 
-    @SuppressLint("MissingPermission")
-    fun getBondedDevices() {
+    fun getBondedDevices(): ArrayList<BluetoothDeviceUIModel> {
 
         val devices = ArrayList<BluetoothDeviceUIModel>()
 
@@ -122,6 +125,21 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
         }
 
         bluetoothDevices = devices
+
+        return devices
+
+    }
+
+
+    fun getBluetoothDevice(mac:String): BluetoothDevice? {
+
+        if (adapter.isEnabled) {
+
+            return adapter.bondedDevices.find { it.address == mac }
+
+        }
+
+        return null
 
     }
 

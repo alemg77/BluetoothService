@@ -10,14 +10,14 @@ import com.a6.bluetoothservice.screens.ShowDevice
 import com.a6.bluetoothservice.screens.ShowDevices
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(viewModel: BluetoothAndroidViewModel) {
 
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = AppScreens.ShowDevices.baseRoute) {
 
         composable(route = AppScreens.ShowDevices.baseRoute) {
-            val viewModel = hiltViewModel<BluetoothAndroidViewModel>()
+            // val viewModel = hiltViewModel<BluetoothAndroidViewModel>()
             ShowDevices(navController = navController, viewModel = viewModel)
         }
 
@@ -29,7 +29,7 @@ fun AppNavigation() {
             requireNotNull(name) { "La cagaste en AppNavigation con el name" }
             val mac = it.arguments?.getString(NavArgs.Mac.key)
             requireNotNull(mac) { "La cagaste en AppNavigation con la mac" }
-            ShowDevice(name = name, mac = mac)
+            ShowDevice(viewModel = viewModel, name = name, mac = mac)
         }
 
     }

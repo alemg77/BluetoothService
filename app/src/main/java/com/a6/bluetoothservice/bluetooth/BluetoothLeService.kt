@@ -6,6 +6,7 @@ import android.bluetooth.*
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
@@ -151,7 +152,6 @@ class BluetoothLeService : Service() {
     private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
 
         if (gattServices == null) return
-
 
         for (gattService in gattServices) {
 

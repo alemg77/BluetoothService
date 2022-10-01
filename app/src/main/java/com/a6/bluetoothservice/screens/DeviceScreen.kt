@@ -1,5 +1,6 @@
 package com.a6.bluetoothservice.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
@@ -7,14 +8,34 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
+import com.a6.bluetoothservice.bluetooth.BluetoothLeService
 
 @Preview(showSystemUi = true)
 @Preview(showBackground = true)
 @Composable
-fun ShowDevice(mac:String = "sin mac", name: String = "sin nombre") {
+fun ShowDevice(
+    viewModel: BluetoothAndroidViewModel = hiltViewModel(),
+    mac: String = "sin mac",
+    name: String = "sin nombre"
+) {
+
+    val context = LocalContext.current
+
+    context.startService(Intent(context, BluetoothLeService::class.java))
+
+    val bluetoothDevice = viewModel.getBluetoothDevice(mac)
+
+    val mBluetoothLeService = BluetoothLeService()
+
+    bluetoothDevice?.let {
+        mBluetoothLeService.conectarGatt(it)
+    }
 
     Card(
         modifier = Modifier

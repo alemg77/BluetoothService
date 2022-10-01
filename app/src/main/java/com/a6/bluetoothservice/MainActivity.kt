@@ -12,13 +12,17 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
 import com.a6.bluetoothservice.navigation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: BluetoothAndroidViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +40,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            AppNavigation()
+            AppNavigation(viewModel)
         }
 
+    }
+
+    override fun onDestroy() {
+        viewModel.unregisterReceiver()
+        super.onDestroy()
     }
 
     /*
