@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/BluetoothService/app/src/main/res/drawable/ic_connected.xml" value="0.2815" />
+        <entry key="..\:/Android/BluetoothService/app/src/main/res/drawable/ic_disconnected.xml" value="0.2815" />
         <entry key="..\:/Android/BluetoothService/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1485" />
         <entry key="..\:/Android/BluetoothService/app/src/main/res/layout/activity_main.xml" value="0.18" />
       </map>

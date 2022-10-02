@@ -1,12 +1,13 @@
 package com.a6.bluetoothservice.navigation
 
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
-import com.a6.bluetoothservice.screens.ShowDevice
+import com.a6.bluetoothservice.screens.DeviceScreen
 import com.a6.bluetoothservice.screens.ShowDevices
 
 @Composable
@@ -29,9 +30,16 @@ fun AppNavigation(viewModel: BluetoothAndroidViewModel) {
             requireNotNull(name) { "La cagaste en AppNavigation con el name" }
             val mac = it.arguments?.getString(NavArgs.Mac.key)
             requireNotNull(mac) { "La cagaste en AppNavigation con la mac" }
-            ShowDevice(viewModel = viewModel, name = name, mac = mac)
+            DeviceScreen(viewModel = viewModel, name = name, mac = mac)
         }
 
     }
 
+}
+
+@Composable
+fun Toolbar() {
+    TopAppBar(title = {
+        Text(text = "Bluetooth 2022")
+    })
 }

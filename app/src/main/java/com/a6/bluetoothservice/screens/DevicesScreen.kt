@@ -1,5 +1,6 @@
 package com.a6.bluetoothservice.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,14 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.a6.bluetoothservice.R
 import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
 import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.navigation.AppScreens
+import com.a6.bluetoothservice.navigation.Toolbar
+
 
 @Composable
 fun ShowDevices(
@@ -31,30 +37,40 @@ fun ShowDevices(
 
     } else {
 
-        MyDevices(navController = navController, viewModel.bluetoothDevices)
+        MyDevicesScreen(navController = navController, viewModel.bluetoothDevices)
 
     }
 
 }
 
-@Preview(showSystemUi = true)
-@Preview(showBackground = true)
+//@Preview(showSystemUi = true)
+//@Preview(showBackground = true)
 @Composable
-fun MyDevices(
+fun MyDevicesScreen(
     navController: NavHostController = rememberNavController(),
     devices: List<BluetoothDeviceUIModel> = BluetoothDeviceUIModel.MOCK_DEVICES
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
-    ) {
-        Column {
-            devices.forEach {
-                ListElement(navController = navController, device = it)
+
+    Scaffold(
+        topBar = { Toolbar() },
+        content = {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colors.background
+            ) {
+                Column {
+                    devices.forEach {
+                        ListElement(navController = navController, device = it)
+                    }
+                }
             }
         }
-    }
+    )
+
 }
+
+
+
 
 @Composable
 fun ListElement(
