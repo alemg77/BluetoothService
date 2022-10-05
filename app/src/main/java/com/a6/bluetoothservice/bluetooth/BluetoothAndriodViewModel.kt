@@ -25,7 +25,10 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
 
     val isGattConnected: MutableState<Boolean> = mutableStateOf(false)
 
+    val services: MutableState<List<GattServiceUIModel>> = mutableStateOf(emptyList())
+
     var bluetoothDevices = emptyList<BluetoothDeviceUIModel>()
+
 
     inner class BluetoothReceiver : BroadcastReceiver() {
 
@@ -218,6 +221,8 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
 
                 displayGattServices(gattService)
 
+                services.value = mapper(gattService)
+
             } else {
                 Log.d(
                     TAG,
@@ -225,6 +230,35 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
                 )
             }
         }
+    }
+
+    private fun mapper(gattServices: List<BluetoothGattService>?): List<GattServiceUIModel> {
+
+        val services = mutableListOf<GattServiceUIModel>()
+
+        gattServices?.forEach { service ->
+
+            val listCharacteristics = mutableListOf<GattCharacteristicUIModel>()
+
+            service.characteristics.forEach { characteristic ->
+                listCharacteristics.add(
+                    GattCharacteristicUIModel.build(
+                        characteristic.uuid.toString(),
+                        characteristic.properties
+                    )
+                )
+            }
+
+            services.add(
+                GattServiceUIModel(
+                    service.uuid.toString(),
+                    listCharacteristics
+                )
+            )
+        }
+
+        return services
+
     }
 
     private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
@@ -235,11 +269,12 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
 
             val uuid = gattService.uuid.toString()
             Log.d(TAG, "gattService: $uuid")
+
             val gattCharacteristics = gattService.characteristics
             for (gattCharacteristic in gattCharacteristics) {
 
-
                 val uuid1 = gattCharacteristic.uuid
+
                 val properties = gattCharacteristic.properties
                 Log.d(TAG, "    gattCharacteristic: $uuid1")
 
@@ -277,9 +312,7 @@ class BluetoothAndroidViewModel @Inject constructor(private val app: Application
     }
 
     fun disConnectGatt() {
-
         bluetoothGatt?.disconnect()
-
     }
 
     fun send(string: String): Boolean {

@@ -1,10 +1,10 @@
 package com.a6.bluetoothservice.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,9 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.a6.bluetoothservice.MainActivity.Companion.TAG
 import com.a6.bluetoothservice.R
 import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
+import com.a6.bluetoothservice.bluetooth.GattCharacteristicUIModel
+import com.a6.bluetoothservice.bluetooth.GattServiceUIModel
 
 @Composable
 fun DeviceScreen(
@@ -29,13 +30,18 @@ fun DeviceScreen(
 
     viewModel.connectGatt(mac)
 
+    val service = viewModel.services.value
+
     Scaffold(
+
         topBar = { ToolbarDevice(name = name, viewModel = viewModel, mac = mac) },
+
         content = {
-            ContentDevice(mac, name) {
+            ContentDevice(service) {
                 viewModel.send(it)
             }
         }
+
     )
 
 }
@@ -93,54 +99,136 @@ fun ToolbarDevice(
 
 @Composable
 fun ContentDevice(
-    mac: String,
-    name: String,
+    gattServices: List<GattServiceUIModel>,
     onClick: (message: String) -> Unit,
 ) {
-    Column(modifier = Modifier.padding(8.dp)) {
 
-        CardDevice(mac, name)
+    LazyColumn(modifier = Modifier.padding(4.dp)) {
 
-        Button(onClick = {
-            onClick("Pulsador 1  ")
-        }) {
-            Text(text = "Pulsador 1")
+        item {
+            Button(onClick = {
+                onClick("Pulsador 1  ")
+            }) {
+                Text(text = "Pulsador 1")
+            }
         }
 
+        item {
+            gattServices.forEach {
+
+                ShowGattService(it)
+            }
+        }
     }
 }
 
-
+@Preview(showBackground = true)
 @Composable
-fun CardDevice(
-    mac: String = "sin mac",
-    name: String = "sin nombre"
-) {
+fun ShowGattService(gattServiceUIModel: GattServiceUIModel = GattServiceUIModel.mock()) {
+
     Card(
         modifier = Modifier
-            .padding(10.dp)
+            .padding(4.dp)
             .background(MaterialTheme.colors.surface)
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colors.background)
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
+            Text(
+                text = "Service UUID: ",
+                Modifier.padding(5.dp)
+            )
 
-            Row {
-                Text(text = "nombre: ", fontSize = 20.sp)
-                Text(text = name, fontSize = 20.sp)
+            AutoResizeText(
+                text = gattServiceUIModel.uuid,
+                maxLines = 1,
+                fontSizeRange = FontSizeRange(
+                    min = 10.sp,
+                    max = 40.sp,
+                ),
+                modifier = Modifier.padding(5.dp)
+            )
+            gattServiceUIModel.characteristics.forEach {
+                ShowGattCGattCharacteristic(it)
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Row {
-                Text(text = "mac = ", fontSize = 20.sp)
-                Text(text = mac, fontSize = 20.sp)
-            }
-
         }
     }
+
 }
 
+
+@Composable
+fun ShowGattCGattCharacteristic(
+    gattCharacteristicUIModel: GattCharacteristicUIModel = GattCharacteristicUIModel.mock()
+) {
+
+    Column {
+        Row {
+
+            Text(
+                text = "characteristic:",
+                fontSize = 12.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+
+            Text(
+                text = gattCharacteristicUIModel.uuid,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            Text(
+                text = "WRITE",
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 5.dp, bottom = 5.dp),
+                color = if (gattCharacteristicUIModel.propertyWrite) {
+                    Color.Red
+                } else {
+                    Color.Gray
+                }
+            )
+
+            Text(
+                text = "READ",
+                fontSize = 17.sp,
+                modifier = Modifier.padding(5.dp),
+                color = if (gattCharacteristicUIModel.propertyRead) {
+                    Color.Red
+                } else {
+                    Color.Gray
+                }
+            )
+
+            Text(
+                text = "INDICATE",
+                fontSize = 17.sp,
+                modifier = Modifier.padding(5.dp),
+                color = if (gattCharacteristicUIModel.propertyIndicate) {
+                    Color.Red
+                } else {
+                    Color.Gray
+                }
+            )
+
+            Text(
+                text = "NOTIFY",
+                fontSize = 17.sp,
+                modifier = Modifier.padding(top = 5.dp, end = 20.dp),
+                color = if (gattCharacteristicUIModel.propertyNotify) {
+                    Color.Red
+                } else {
+                    Color.Gray
+                }
+            )
+        }
+    }
+
+}

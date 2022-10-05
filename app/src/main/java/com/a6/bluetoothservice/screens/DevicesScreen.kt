@@ -1,22 +1,18 @@
 package com.a6.bluetoothservice.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.a6.bluetoothservice.R
 import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
 import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.navigation.AppScreens
@@ -43,7 +39,6 @@ fun ShowDevices(
 
 }
 
-//@Preview(showSystemUi = true)
 //@Preview(showBackground = true)
 @Composable
 fun MyDevicesScreen(
@@ -58,18 +53,21 @@ fun MyDevicesScreen(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colors.background
             ) {
-                Column {
-                    devices.forEach {
-                        ListElement(navController = navController, device = it)
+
+                LazyColumn(modifier = Modifier.padding(4.dp)) {
+
+                    item {
+                        devices.forEach {
+                            ListElement(navController = navController, device = it)
+                        }
+
                     }
                 }
+
             }
-        }
-    )
 
+        })
 }
-
-
 
 
 @Composable
@@ -97,17 +95,11 @@ fun ListElement(
                 .padding(8.dp)
         ) {
 
-            Row {
-                Text(text = "nombre: ", fontSize = 20.sp)
-                Text(text = device.name, fontSize = 20.sp)
-            }
+            Text(text = "nombre: ${device.name}", fontSize = 24.sp)
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row {
-                Text(text = "mac = ", fontSize = 20.sp)
-                Text(text = device.mac, fontSize = 20.sp)
-            }
+            Text(text = "mac = ${device.mac}", fontSize = 24.sp)
 
         }
     }
@@ -126,3 +118,5 @@ fun LoadingScreen() {
         )
     }
 }
+
+
