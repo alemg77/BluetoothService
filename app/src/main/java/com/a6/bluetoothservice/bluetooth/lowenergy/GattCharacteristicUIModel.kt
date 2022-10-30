@@ -1,4 +1,4 @@
-package com.a6.bluetoothservice.bluetooth
+package com.a6.bluetoothservice.bluetooth.lowenergy
 
 import android.bluetooth.BluetoothGattCharacteristic
 

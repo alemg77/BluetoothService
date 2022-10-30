@@ -17,13 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a6.bluetoothservice.R
-import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
-import com.a6.bluetoothservice.bluetooth.GattCharacteristicUIModel
+import com.a6.bluetoothservice.bluetooth.lowenergy.GattCharacteristicUIModel
 import com.a6.bluetoothservice.bluetooth.GattServiceUIModel
+import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 
 @Composable
 fun DeviceScreen(
-    viewModel: BluetoothAndroidViewModel = hiltViewModel(),
+    viewModel: BluetoothLEViewModel = hiltViewModel(),
     mac: String = "sin mac",
     name: String = "sin nombre"
 ) {
@@ -46,10 +46,9 @@ fun DeviceScreen(
 
 }
 
-@Preview(showBackground = true)
 @Composable
 fun ToolbarDevice(
-    viewModel: BluetoothAndroidViewModel = hiltViewModel(),
+    viewModel: BluetoothLEViewModel = hiltViewModel(),
     mac: String = "sin mac",
     name: String = "sin nombre"
 ) {
@@ -122,7 +121,7 @@ fun ContentDevice(
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun ShowGattService(gattServiceUIModel: GattServiceUIModel = GattServiceUIModel.mock()) {
 
@@ -157,7 +156,7 @@ fun ShowGattService(gattServiceUIModel: GattServiceUIModel = GattServiceUIModel.
 
 }
 
-
+@Preview(showBackground = true)
 @Composable
 fun ShowGattCGattCharacteristic(
     gattCharacteristicUIModel: GattCharacteristicUIModel = GattCharacteristicUIModel.mock()
@@ -182,13 +181,14 @@ fun ShowGattCGattCharacteristic(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
 
             Text(
                 text = "WRITE",
+                fontSize = 17.sp,
                 modifier = Modifier
-                    .padding(start = 20.dp, top = 5.dp, bottom = 5.dp),
+                    .padding(5.dp),
                 color = if (gattCharacteristicUIModel.propertyWrite) {
                     Color.Red
                 } else {
@@ -221,13 +221,14 @@ fun ShowGattCGattCharacteristic(
             Text(
                 text = "NOTIFY",
                 fontSize = 17.sp,
-                modifier = Modifier.padding(top = 5.dp, end = 20.dp),
+                modifier = Modifier.padding(5.dp),
                 color = if (gattCharacteristicUIModel.propertyNotify) {
                     Color.Red
                 } else {
                     Color.Gray
                 }
             )
+
         }
     }
 

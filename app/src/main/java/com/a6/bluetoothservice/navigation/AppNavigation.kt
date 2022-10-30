@@ -6,19 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
+import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 import com.a6.bluetoothservice.screens.DeviceScreen
 import com.a6.bluetoothservice.screens.ShowDevices
 
 @Composable
-fun AppNavigation(viewModel: BluetoothAndroidViewModel) {
+fun AppNavigation(viewModel: BluetoothLEViewModel) {
 
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = AppScreens.ShowDevices.baseRoute) {
 
         composable(route = AppScreens.ShowDevices.baseRoute) {
-            // val viewModel = hiltViewModel<BluetoothAndroidViewModel>()
+            // val viewModel = hiltViewModel<BluetoothLEViewModel>()
             ShowDevices(navController = navController, viewModel = viewModel)
         }
 

@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.a6.bluetoothservice.bluetooth.BluetoothAndroidViewModel
 import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
+import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 import com.a6.bluetoothservice.navigation.AppScreens
 import com.a6.bluetoothservice.navigation.Toolbar
 
@@ -22,7 +22,7 @@ import com.a6.bluetoothservice.navigation.Toolbar
 @Composable
 fun ShowDevices(
     navController: NavHostController = rememberNavController(),
-    viewModel: BluetoothAndroidViewModel
+    viewModel: BluetoothLEViewModel
 ) {
 
     val isBluetoothEnable = viewModel.isBluetoothOn.value

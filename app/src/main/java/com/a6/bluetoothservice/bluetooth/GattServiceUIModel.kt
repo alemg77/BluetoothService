@@ -1,5 +1,7 @@
 package com.a6.bluetoothservice.bluetooth
 
+import com.a6.bluetoothservice.bluetooth.lowenergy.GattCharacteristicUIModel
+
 class GattServiceUIModel(
     val uuid: String,
     val characteristics: List<GattCharacteristicUIModel>
