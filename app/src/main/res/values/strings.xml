@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BluetoothService</string>
+    <string name="title_activity_bluetooth_classic">BluetoothClassic</string>
 </resources>

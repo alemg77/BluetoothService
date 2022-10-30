@@ -3,6 +3,7 @@ package com.a6.bluetoothservice.bluetooth
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice.DEVICE_TYPE_CLASSIC
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -107,8 +108,10 @@ open class BluetoothViewModel @Inject constructor(private val app: Application) 
 
         if (adapter.isEnabled) {
 
+            // DEVICE_TYPE_CLASSIC
+
             adapter.bondedDevices.forEach {
-                devices.add(BluetoothDeviceUIModel(it.name, it.address))
+                devices.add(BluetoothDeviceUIModel(it.name, it.address, it.type))
             }
 
         }
