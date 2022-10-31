@@ -1,6 +1,7 @@
 package com.a6.bluetoothservice.screens
 
 import android.bluetooth.BluetoothDevice.*
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.a6.bluetoothservice.BluetoothClassicActivity
 import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 import com.a6.bluetoothservice.navigation.AppScreens
@@ -76,18 +79,30 @@ fun ListElement(
     navController: NavHostController,
     device: BluetoothDeviceUIModel
 ) {
+
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .padding(10.dp)
             .background(MaterialTheme.colors.surface)
             .fillMaxWidth()
             .clickable {
-                navController.navigate(
-                    route = AppScreens.ShowDevice.createNavRoute(
-                        name = device.name,
-                        mac = device.mac
+
+                if (device.type == DEVICE_TYPE_CLASSIC) {
+
+                    val intent = Intent(context, BluetoothClassicActivity::class.java)
+                    intent.putExtra("MAC", device.mac)
+                    context.startActivity(intent)
+
+                } else {
+                    navController.navigate(
+                        route = AppScreens.ShowDevice.createNavRoute(
+                            name = device.name,
+                            mac = device.mac
+                        )
                     )
-                )
+                }
             }
     ) {
         Column(
