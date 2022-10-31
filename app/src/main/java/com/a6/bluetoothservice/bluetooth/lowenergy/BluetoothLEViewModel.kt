@@ -3,15 +3,7 @@ package com.a6.bluetoothservice.bluetooth.lowenergy
 import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.*
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.bluetooth.BluetoothViewModel
 import com.a6.bluetoothservice.bluetooth.GattServiceUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,13 +53,17 @@ class BluetoothLEViewModel @Inject constructor(private val app: Application) :
             Log.d(TAG, "onConnectionStateChange")
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
-                isGattConnected.value = true
+                isConnected.value = true
 
-                bluetoothGatt!!.discoverServices()
+                try {
+                    bluetoothGatt!!.discoverServices()
+                } catch (e:java.lang.Exception){
+                    Log.e(TAG," unknown problem ${e.message} ")
+                }
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 
-                isGattConnected.value = false
+                isConnected.value = false
 
                 Log.i(TAG, "Disconnected from GATT server.")
 
@@ -203,25 +199,21 @@ class BluetoothLEViewModel @Inject constructor(private val app: Application) :
         }
     }
 
-    fun connectGatt(mac: String): Boolean {
+    override fun connect(mac: String) {
 
-        if (!adapter.isEnabled)
-            return false
-
-        val device = adapter.bondedDevices.find { it.address == mac } ?: return false
+        val device = getBluetoothDevice(mac) ?: return
 
         bluetoothGatt = device.connectGatt(app, false, gattCallback)
 
-        return true
     }
 
-    fun disConnectGatt() {
+    override fun disconnect() {
         bluetoothGatt?.disconnect()
     }
 
     fun send(string: String): Boolean {
 
-        if (!isGattConnected.value) {
+        if (!isConnected.value) {
             return false
         }
 

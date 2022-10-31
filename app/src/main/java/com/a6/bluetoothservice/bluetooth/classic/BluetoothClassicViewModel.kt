@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothSocket
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.a6.bluetoothservice.bluetooth.BluetoothViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
@@ -22,15 +21,15 @@ import javax.inject.Inject
 class BluetoothClassicViewModel @Inject constructor(private val app: Application) :
     BluetoothViewModel(app) {
 
-    val isConnected: MutableState<Boolean> = mutableStateOf(false)
-
     private lateinit var connectionJob: Job
 
     private lateinit var socket: BluetoothSocket
 
-    fun connect(mac: String) {
+    private lateinit var outputStream: OutputStream
 
-        val bluetoothDevice = getBluetoothDevice(mac) ?: return
+    override fun connect(deviceMac: String) {
+
+        val bluetoothDevice = getBluetoothDevice(deviceMac) ?: return
 
         val uuid = bluetoothDevice.uuids[0].uuid
 
@@ -42,7 +41,7 @@ class BluetoothClassicViewModel @Inject constructor(private val app: Application
 
             Log.d(TAG, "Connected with ${bluetoothDevice.name}")
 
-            val outputStream = socket.outputStream
+            outputStream = socket.outputStream
 
             val inputStream = socket.inputStream
 
@@ -60,12 +59,12 @@ class BluetoothClassicViewModel @Inject constructor(private val app: Application
 
                 numBytes = try {
                     inputStream.read(mmBuffer)
-                } catch (e:IOException) {
+                } catch (e: IOException) {
                     isConnected.value = false
                     break
                 }
 
-                val str = String(mmBuffer, 0 , numBytes, StandardCharsets.UTF_8)
+                val str = String(mmBuffer, 0, numBytes, StandardCharsets.UTF_8)
 
                 Log.d(TAG, "Llegaron $numBytes bytes: $str")
 
@@ -75,9 +74,21 @@ class BluetoothClassicViewModel @Inject constructor(private val app: Application
 
     }
 
-    fun disconnect() {
+    fun send(data: String) {
 
-        if ( this::connectionJob.isInitialized ) {
+        if (!this::outputStream.isInitialized) {
+            return
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            outputStream.write(data.toByteArray())
+        }
+
+    }
+
+    override fun disconnect() {
+
+        if (this::connectionJob.isInitialized) {
 
             connectionJob.cancel()
 
@@ -86,9 +97,6 @@ class BluetoothClassicViewModel @Inject constructor(private val app: Application
         }
 
     }
-
-
-
 
 
     companion object {

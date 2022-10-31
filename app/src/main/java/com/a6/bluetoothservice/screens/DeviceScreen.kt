@@ -17,24 +17,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.a6.bluetoothservice.R
-import com.a6.bluetoothservice.bluetooth.lowenergy.GattCharacteristicUIModel
+import com.a6.bluetoothservice.bluetooth.BluetoothViewModel
 import com.a6.bluetoothservice.bluetooth.GattServiceUIModel
 import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
+import com.a6.bluetoothservice.bluetooth.lowenergy.GattCharacteristicUIModel
 
 @Composable
 fun DeviceScreen(
     viewModel: BluetoothLEViewModel = hiltViewModel(),
-    mac: String = "sin mac",
-    name: String = "sin nombre"
+    mac: String = "sin mac"
 ) {
 
-    viewModel.connectGatt(mac)
+    viewModel.connect(mac)
 
     val service = viewModel.services.value
 
     Scaffold(
 
-        topBar = { ToolbarDevice(name = name, viewModel = viewModel, mac = mac) },
+        topBar = { ToolbarDevice(viewModel = viewModel) },
 
         content = {
             ContentDevice(service) {
@@ -46,14 +46,13 @@ fun DeviceScreen(
 
 }
 
+
 @Composable
 fun ToolbarDevice(
-    viewModel: BluetoothLEViewModel = hiltViewModel(),
-    mac: String = "sin mac",
-    name: String = "sin nombre"
+    viewModel: BluetoothViewModel = hiltViewModel()
 ) {
 
-    val isGattConnected = viewModel.isGattConnected.value
+    val isConnected = viewModel.isConnected.value
 
     TopAppBar(title = {
 
@@ -64,12 +63,12 @@ fun ToolbarDevice(
         {
 
             Text(
-                text = name, modifier = Modifier.padding(12.dp)
+                text = viewModel.getDeviceName(), modifier = Modifier.padding(12.dp)
             )
 
             Image(
                 painterResource(
-                    id = if (isGattConnected) {
+                    id = if (isConnected) {
                         R.drawable.ic_connected
                     } else {
                         R.drawable.ic_disconnected
@@ -83,17 +82,16 @@ fun ToolbarDevice(
                         enabled = true,
                         onClickLabel = "Clickable image",
                         onClick = {
-                            if (isGattConnected) {
-                                viewModel.disConnectGatt()
+                            if (isConnected) {
+                                viewModel.disconnect()
                             } else {
-                                viewModel.connectGatt(mac)
+                                viewModel.connect(viewModel.getDeviceMac())
                             }
                         }),
                 colorFilter = ColorFilter.tint(color = Color.White)
             )
         }
     })
-
 }
 
 @Composable

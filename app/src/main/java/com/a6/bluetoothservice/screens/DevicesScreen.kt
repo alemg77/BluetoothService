@@ -17,11 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.a6.bluetoothservice.BluetoothClassicActivity
 import com.a6.bluetoothservice.bluetooth.BluetoothDeviceUIModel
 import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 import com.a6.bluetoothservice.navigation.AppScreens
 import com.a6.bluetoothservice.navigation.Toolbar
+import com.a6.bluetoothservice.ui.classic.ClassicActivity
 
 
 @Composable
@@ -89,20 +89,25 @@ fun ListElement(
             .fillMaxWidth()
             .clickable {
 
-                if (device.type == DEVICE_TYPE_CLASSIC) {
+                when ( device.type ) {
 
-                    val intent = Intent(context, BluetoothClassicActivity::class.java)
-                    intent.putExtra("MAC", device.mac)
-                    context.startActivity(intent)
-
-                } else {
-                    navController.navigate(
-                        route = AppScreens.ShowDevice.createNavRoute(
-                            name = device.name,
-                            mac = device.mac
+                    DEVICE_TYPE_LE -> {
+                        navController.navigate(
+                            route = AppScreens.ShowDevice.createNavRoute(
+                                name = device.name,
+                                mac = device.mac
+                            )
                         )
-                    )
+                    }
+
+                    else -> {
+                        val intent = Intent(context, ClassicActivity::class.java)
+                        intent.putExtra("MAC", device.mac)
+                        context.startActivity(intent)
+                    }
+
                 }
+
             }
     ) {
         Column(

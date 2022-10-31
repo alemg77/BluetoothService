@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothDevice.DEVICE_TYPE_CLASSIC
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -14,19 +13,22 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
 @SuppressLint("MissingPermission")
-open class BluetoothViewModel @Inject constructor(private val app: Application) :
+abstract class BluetoothViewModel constructor(private val app: Application) :
     AndroidViewModel(app) {
 
-    protected var adapter: BluetoothAdapter
+    private var adapter: BluetoothAdapter
+
+    private var device: BluetoothDevice? = null
+
+    val isConnected: MutableState<Boolean> = mutableStateOf(false)
+
+    abstract fun connect(mac: String)
+
+    abstract fun disconnect()
 
     val isBluetoothOn: MutableState<Boolean> = mutableStateOf(false)
-
-    val isGattConnected: MutableState<Boolean> = mutableStateOf(false)
 
     val services: MutableState<List<GattServiceUIModel>> = mutableStateOf(emptyList())
 
@@ -128,8 +130,28 @@ open class BluetoothViewModel @Inject constructor(private val app: Application) 
         if (!adapter.isEnabled)
             return null
 
-        return adapter.bondedDevices.find { it.address == mac }
+        device = adapter.bondedDevices.find { it.address == mac }
 
+        return device
+
+    }
+
+    fun getDevice(): BluetoothDevice? {
+        return device
+    }
+
+    fun getDeviceMac(): String {
+        device?.let {
+            return it.address
+        }
+        return "disconnected"
+    }
+
+    fun getDeviceName(): String {
+        device?.let {
+            return it.name
+        }
+        return "disconnected"
     }
 
     companion object {
