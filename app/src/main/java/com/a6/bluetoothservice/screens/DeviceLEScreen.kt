@@ -23,21 +23,19 @@ import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
 import com.a6.bluetoothservice.bluetooth.lowenergy.GattCharacteristicUIModel
 
 @Composable
-fun DeviceScreen(
+fun DeviceLEScreen(
     viewModel: BluetoothLEViewModel = hiltViewModel(),
     mac: String = "sin mac"
 ) {
 
     viewModel.connect(mac)
 
-    val service = viewModel.services.value
-
     Scaffold(
 
         topBar = { ToolbarDevice(viewModel = viewModel) },
 
         content = {
-            ContentDevice(service) {
+            ContentDevice(viewModel = viewModel) {
                 viewModel.send(it)
             }
         }
@@ -96,9 +94,11 @@ fun ToolbarDevice(
 
 @Composable
 fun ContentDevice(
-    gattServices: List<GattServiceUIModel>,
+    viewModel: BluetoothViewModel = hiltViewModel(),
     onClick: (message: String) -> Unit,
 ) {
+
+    val gattServices = viewModel.services.value
 
     LazyColumn(modifier = Modifier.padding(4.dp)) {
 

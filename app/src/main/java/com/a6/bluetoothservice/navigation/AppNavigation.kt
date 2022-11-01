@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.a6.bluetoothservice.bluetooth.lowenergy.BluetoothLEViewModel
-import com.a6.bluetoothservice.screens.DeviceScreen
+import com.a6.bluetoothservice.screens.DeviceLEScreen
 import com.a6.bluetoothservice.screens.ShowDevices
 
 @Composable
@@ -26,11 +26,9 @@ fun AppNavigation(viewModel: BluetoothLEViewModel) {
             route = AppScreens.ShowDevice.route,
             arguments = AppScreens.ShowDevice.args
         ) {
-            val name = it.arguments?.getString(NavArgs.Name.key)
-            requireNotNull(name) { "La cagaste en AppNavigation con el name" }
             val mac = it.arguments?.getString(NavArgs.Mac.key)
             requireNotNull(mac) { "La cagaste en AppNavigation con la mac" }
-            DeviceScreen(viewModel = viewModel, name = name, mac = mac)
+            DeviceLEScreen(viewModel = viewModel, mac)
         }
 
     }
